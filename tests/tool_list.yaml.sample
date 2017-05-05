@@ -3,7 +3,8 @@
 tools:
 - name: 'bwa'
   owner: 'devteam'
-  revisions: 546ada4a9f43
+  revisions:
+  - 546ada4a9f43
   tool_panel_section_label: 'BWA section'
   tool_shed_url: https://toolshed.g2.bx.psu.edu
   install_tool_dependencies: true
