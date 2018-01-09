@@ -189,7 +189,7 @@ def run_dm(args):
                 for table in data_tables:
                     job = tool_data_client.reload_data_table(table)
                     log.info('reloading data_table %s.' % (table))
-                    job_list.append(job)
+                    # job_list.append(job)  # even not appending the job to the queue
         successful_jobs, failed_jobs = wait(gi, job_list)
         if failed_jobs:
             if not args.ignore_errors:
