@@ -183,13 +183,15 @@ def run_dm(args):
                 number_skipped_jobs += 1
             else:
                 # run the DM-job
-                job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
+                try:
+                    job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
+                except bioblend.ConnectionError:
+                    for table in data_tables:
+                        tool_data_client.reload_data_table(table)
+                        log.info('reloading data_table %s' % (table))
+                    job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
                 log.info('Dispatched job %i. Running DM: "%s" with parameters: %s' % (job['outputs'][0]['hid'], dm_id, inputs))
                 job_list.append(job)
-                for table in data_tables:
-                    job = tool_data_client.reload_data_table(table)
-                    log.info('reloading data_table %s.' % (table))
-                    # job_list.append(job)  # even not appending the job to the queue
         successful_jobs, failed_jobs = wait(gi, job_list)
         if failed_jobs:
             if not args.ignore_errors:
