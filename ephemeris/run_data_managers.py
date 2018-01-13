@@ -185,7 +185,7 @@ def run_dm(args):
                 # run the DM-job
                 try:
                     job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
-                except bioblend.ConnectionError:
+                except ConnectionError:
                     for table in data_tables:
                         tool_data_client.reload_data_table(table)
                         log.info('reloading data_table %s' % (table))
