@@ -166,6 +166,10 @@ def run_dm(args):
     for dm in conf.get('data_managers'):
         items = parse_items(dm.get('items', ['']), genomes)
         job_list = []
+        data_tables = list(set(data_tables + dm.get('data_table_reload', [])))
+        for table in data_tables:
+            tool_data_client.reload_data_table(table)
+            log.info('reloading data_table %s' % (table))
         for item in items:
             dm_id = dm['id']
             params = dm['params']
@@ -177,7 +181,6 @@ def run_dm(args):
                 value_template = Template(value)
                 value = value_template.render(item=item)
                 inputs.update({key: value})
-            data_tables = list(set(data_tables + dm.get('data_table_reload', [])))
             # Only run if not run before.
             if input_entries_exist_in_data_tables(tool_data_client, data_tables, inputs) and not args.overwrite:
                 log.info('%s already run for %s' % (dm_id, inputs))
