@@ -186,11 +186,11 @@ def run_dm(args):
                 try:
                     job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
                 except Exception:  # to do: specify the exception
-                    table_ready = FALSE
+                    table_ready = False
                     while not table_ready:
                         try:
                             job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
-                            table_ready = TRUE
+                            table_ready = True
                         except Exception:
                             for table in data_tables:
                                 time.sleep(10)
