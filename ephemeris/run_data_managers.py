@@ -186,6 +186,7 @@ def run_dm(args):
                 # run the DM-job
                 try:
                     job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
+                    log.info('job info %s' % (job))
                 except Exception:  # to do: specify the exception
                     table_ready = False
                     while not table_ready:
@@ -196,9 +197,10 @@ def run_dm(args):
                         except Exception:
                             log.info('Exception %s' % (sys.exc_info()[0]))
                             for table in data_tables:
+                                time.sleep(5)
                                 tool_data_client.reload_data_table(table)
+                                time.sleep(5)
                                 log.info('reloading data_table %s' % (table))
-                                time.sleep(1)
                 log.info('Dispatched job %i. Running DM: "%s" with parameters: %s' % (job['outputs'][0]['hid'], dm_id, inputs))
                 job_list.append(job)
         successful_jobs, failed_jobs = wait(gi, job_list)
