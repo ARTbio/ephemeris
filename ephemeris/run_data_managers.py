@@ -162,6 +162,7 @@ def run_dm(args):
 
     conf = yaml.load(open(args.config))
     genomes = conf.get('genomes', '')
+    data_tables = []
     for dm in conf.get('data_managers'):
         items = parse_items(dm.get('items', ['']), genomes)
         job_list = []
@@ -176,8 +177,7 @@ def run_dm(args):
                 value_template = Template(value)
                 value = value_template.render(item=item)
                 inputs.update({key: value})
-
-            data_tables = dm.get('data_table_reload', [])
+            data_tables = list(set(data_tables + dm.get('data_table_reload', [])))
             # Only run if not run before.
             if input_entries_exist_in_data_tables(tool_data_client, data_tables, inputs) and not args.overwrite:
                 log.info('%s already run for %s' % (dm_id, inputs))
@@ -195,9 +195,9 @@ def run_dm(args):
                         except Exception:
                             log.info('Exception %s' % (sys.exc_info()[0]))
                             for table in data_tables:
-                                time.sleep(10)
                                 tool_data_client.reload_data_table(table)
                                 log.info('reloading data_table %s' % (table))
+                                time.sleep(1)
                 log.info('Dispatched job %i. Running DM: "%s" with parameters: %s' % (job['outputs'][0]['hid'], dm_id, inputs))
                 job_list.append(job)
         successful_jobs, failed_jobs = wait(gi, job_list)
