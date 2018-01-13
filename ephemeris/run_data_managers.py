@@ -192,6 +192,7 @@ def run_dm(args):
                             job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
                             table_ready = True
                         except Exception:
+                            log.info('Exception %s' % (sys.exc_info()[0]))
                             for table in data_tables:
                                 time.sleep(10)
                                 tool_data_client.reload_data_table(table)
