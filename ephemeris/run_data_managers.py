@@ -170,6 +170,7 @@ def run_dm(args):
         for table in data_tables:
             tool_data_client.reload_data_table(table)
             log.info('reloading data_table %s' % (table))
+            time.sleep(5)
         for item in items:
             dm_id = dm['id']
             params = dm['params']
