@@ -191,6 +191,7 @@ def run_dm(args):
                     while not table_ready:
                         try:
                             job = gi.tools.run_tool(history_id=None, tool_id=dm_id, tool_inputs=inputs)
+                            log.info('job info %s' % (job))
                             table_ready = True
                         except Exception:
                             log.info('Exception %s' % (sys.exc_info()[0]))
