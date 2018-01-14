@@ -36,34 +36,6 @@ echo "Starting galaxy docker container"
 start_container
 docker ps
 
-echo "Check tool installation with yaml on the commandline"
-# CD Hit was chosen since it is old and seems to be unmaintained. Last update was 2015.
-# Anyone know a smaller tool that could fit its place?
-OLD_TOOL="{'owner':'jjohnson','name':'cdhit','revisions':['34a799d173f7'],'tool_panel_section_label':'CD_HIT'}"
-shed-tools install -y  ${OLD_TOOL} --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT
-get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
-grep "cdhit" result_tool_list.yaml
-grep "34a799d173f7" result_tool_list.yaml #installed revision
-
-echo "Check update function"
-shed-tools update -a admin -g http://localhost:$WEB_PORT
-get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
-grep "cdhit" result_tool_list.yaml
-grep "28b7a43907f0" result_tool_list.yaml #latest revision
-
-start_new_container
-echo "Check tool installation with command line flags"
-shed-tools install --name cdhit --owner jjohnson --section_label "CD_HIT" --revisions 34a799d173f7 -a admin -g http://localhost:$WEB_PORT
-get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
-grep "cdhit" result_tool_list.yaml
-grep "34a799d173f7" result_tool_list.yaml #installed revision
-
-start_new_container
-echo "Check tool installation with --latest"
-shed-tools install -y  $OLD_TOOL --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT --latest
-get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
-grep "cdhit" result_tool_list.yaml
-grep "28b7a43907f0" result_tool_list.yaml #latest revision
 
 start_new_container
 echo "Check tool installation from tool list"
@@ -85,21 +57,9 @@ docker exec $CID supervisorctl restart galaxy:
 echo "Wait for galaxy to start"
 galaxy-wait -g http://localhost:$WEB_PORT -v --timeout 120
 
-echo "Check workflow installation"
-workflow-install --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT -w "$TEST_DATA"/test_workflow.ga
-workflow-install -a admin -g http://localhost:$WEB_PORT -w "$TEST_DATA"/test_workflow.ga
-
-echo "Populate data libraries"
-setup-data-libraries --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT -i "$TEST_DATA"/library_data_example.yaml
-setup-data-libraries -a admin -g http://localhost:$WEB_PORT -i "$TEST_DATA"/library_data_example.yaml
-
-echo "Get tool list from Galaxy"
-get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
-workflow-to-tools -w "$TEST_DATA"/test_workflow_2.ga -o result_workflow_to_tools.yaml
-
-echo "Check tool installation from workflow"
-shed-tools install -t result_workflow_to_tools.yaml -a admin -g http://localhost:$WEB_PORT
-shed-tools install -t result_workflow_to_tools.yaml --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT
+#echo "Get tool list from Galaxy"
+#get-tool-list -g http://localhost:$WEB_PORT -o result_tool_list.yaml
+#workflow-to-tools -w "$TEST_DATA"/test_workflow_2.ga -o result_workflow_to_tools.yaml
 
 echo "Check installation of reference genomes"
 run-data-managers --user admin@galaxy.org -p admin -g http://localhost:$WEB_PORT --config "$TEST_DATA"/run_data_managers.yaml.test
@@ -113,13 +73,13 @@ run-data-managers -a admin -g http://localhost:$WEB_PORT --config "$TEST_DATA"/r
 # Check if already installed was thrown
 cat data_manager_output.txt
 
-echo "Number of skipped jobs should be 6"
-data_manager_already_installed=$(cat data_manager_output.txt | grep -i "Skipped jobs: 6" -c)
-if [ $data_manager_already_installed -ne 1 ]
-    then
-        echo "ERROR: Not all already installed genomes were skipped"
-        exit 1
-fi
+#echo "Number of skipped jobs should be 6"
+#data_manager_already_installed=$(cat data_manager_output.txt | grep -i "Skipped jobs: 6" -c)
+#if [ $data_manager_already_installed -ne 1 ]
+#    then
+#        echo "ERROR: Not all already installed genomes were skipped"
+#        exit 1
+#fi
 
 # Remove running container
 docker rm -f $CID

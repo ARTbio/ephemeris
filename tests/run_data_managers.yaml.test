@@ -33,3 +33,12 @@ data_managers:
       items: "{{ genomes }}"
       data_table_reload:
         - fasta_indexes
+
+    - id: bowtie_index_builder
+      params:
+        - 'all_fasta_source': '{{ item.id }}'
+        - 'sequence_name': '{{ item.name }}'
+        - 'sequence_id': '{{ item.id }}'
+      items: "{{ genomes }}"
+      data_table_reload:
+        - all_fasta
